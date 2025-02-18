@@ -40,7 +40,7 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Register([FromBody] RegisterRequest request)
     {
         if (_context.Users.Any(u => u.Username == request.Username))
-            return BadRequest("Bu kullanıcı adı zaten mevcut.");
+            return BadRequest("User is already registered.");
 
         var hashedPassword = BCrypt.Net.BCrypt.HashPassword(request.Password);
 
@@ -54,9 +54,8 @@ public class AuthController : ControllerBase
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
 
-        return Ok("Kullanıcı başarıyla oluşturuldu.");
+        return Ok("User registered.");
     }
-    
     
     
     private string GenerateJwtToken(User user)
@@ -65,10 +64,12 @@ public class AuthController : ControllerBase
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
+        var role = ((Role)user.Role).ToString();
+
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.Name, user.Username),
-            new Claim(ClaimTypes.Role, user.Role.ToString())
+            new(ClaimTypes.Name, user.Username),
+            new(ClaimTypes.Role, role)
         };
 
         var token = new JwtSecurityToken(

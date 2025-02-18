@@ -3038,11 +3038,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/aliaskin/RiderProjects/MultiTenantEmployeeAPI/MultiTenantEmployeeAPI/MultiTenantEmployeeAPI.csproj",
+      "projectUniqueName": "/Users/aliaskin/MultiTenantEmployeeApi/MultiTenantEmployeeAPI/MultiTenantEmployeeAPI.csproj",
       "projectName": "MultiTenantEmployeeAPI",
-      "projectPath": "/Users/aliaskin/RiderProjects/MultiTenantEmployeeAPI/MultiTenantEmployeeAPI/MultiTenantEmployeeAPI.csproj",
+      "projectPath": "/Users/aliaskin/MultiTenantEmployeeApi/MultiTenantEmployeeAPI/MultiTenantEmployeeAPI.csproj",
       "packagesPath": "/Users/aliaskin/.nuget/packages/",
-      "outputPath": "/Users/aliaskin/RiderProjects/MultiTenantEmployeeAPI/MultiTenantEmployeeAPI/obj/",
+      "outputPath": "/Users/aliaskin/MultiTenantEmployeeApi/MultiTenantEmployeeAPI/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/aliaskin/.nuget/NuGet/NuGet.Config"
