@@ -1,0 +1,5 @@
+[
+  { "EmployeeId": 1, "DepartmentId": 2 },
+  { "EmployeeId": 2, "DepartmentId": 1 },
+  { "EmployeeId": 3, "DepartmentId": 3 }
+]

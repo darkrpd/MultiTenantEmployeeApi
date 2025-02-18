@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "VJxxXU9si0CWqU/TsMUyvpRvD0ZmQWCsjjUQM+Jz3J8=",
+  "Source": "MultiTenantEmployeeAPI",
+  "BasePath": "_content/MultiTenantEmployeeAPI",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
