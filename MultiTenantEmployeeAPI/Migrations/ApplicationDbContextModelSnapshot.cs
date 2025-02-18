@@ -80,6 +80,30 @@ namespace MultiTenantEmployeeAPI.Migrations
                     b.ToTable("EmployeeDepartments");
                 });
 
+            modelBuilder.Entity("MultiTenantEmployeeAPI.Models.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Role")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
+                });
+
             modelBuilder.Entity("MultiTenantEmployeeAPI.Models.EmployeeDepartment", b =>
                 {
                     b.HasOne("MultiTenantEmployeeAPI.Models.Department", "Department")

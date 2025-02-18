@@ -3,6 +3,9 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using MultiTenantEmployeeAPI.Data;
+using MultiTenantEmployeeAPI.Dtos;
+using MultiTenantEmployeeAPI.Models;
 
 namespace MultiTenantEmployeeAPI.Controllers;
 
@@ -10,33 +13,52 @@ namespace MultiTenantEmployeeAPI.Controllers;
 [ApiController]
 public class AuthController : ControllerBase
 {
+    private readonly ApplicationDbContext _context;
     private readonly IConfiguration _configuration;
 
-    public AuthController(IConfiguration configuration)
+    public AuthController(ApplicationDbContext context,
+        IConfiguration configuration)
     {
+        _context = context;
         _configuration = configuration;
     }
 
     [HttpPost("login")]
     public IActionResult Login([FromBody] LoginRequest request)
     {
-        // Örnek kullanıcı listesi (Veritabanına bağlanılabilir)
-        var users = new List<User>
-        {
-            new User { Username = "admin", Password = "admin123", Role = "Admin" },
-            new User { Username = "user", Password = "user123", Role = "User" }
-        };
+        var user = _context.Users.FirstOrDefault(u => u.Username == request.Username);
 
-        var user = users.FirstOrDefault(u => u.Username == request.Username && u.Password == request.Password);
-
-        if (user == null)
+        if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
             return Unauthorized("Geçersiz kullanıcı adı veya şifre");
 
-        // JWT Token üret
         var token = GenerateJwtToken(user);
         return Ok(new { Token = token });
     }
 
+    
+    [HttpPost("register")]
+    public async Task<IActionResult> Register([FromBody] RegisterRequest request)
+    {
+        if (_context.Users.Any(u => u.Username == request.Username))
+            return BadRequest("Bu kullanıcı adı zaten mevcut.");
+
+        var hashedPassword = BCrypt.Net.BCrypt.HashPassword(request.Password);
+
+        var user = new User
+        {
+            Username = request.Username,
+            PasswordHash = hashedPassword,
+            Role = (int)request.Role
+        };
+
+        _context.Users.Add(user);
+        await _context.SaveChangesAsync();
+
+        return Ok("Kullanıcı başarıyla oluşturuldu.");
+    }
+    
+    
+    
     private string GenerateJwtToken(User user)
     {
         var jwtSettings = _configuration.GetSection("JwtSettings");
@@ -46,7 +68,7 @@ public class AuthController : ControllerBase
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.Name, user.Username),
-            new Claim(ClaimTypes.Role, user.Role)
+            new Claim(ClaimTypes.Role, user.Role.ToString())
         };
 
         var token = new JwtSecurityToken(
@@ -59,19 +81,7 @@ public class AuthController : ControllerBase
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
+
 }
 
-// Kullanıcı modeli
-public class User
-{
-    public string Username { get; set; }
-    public string Password { get; set; }
-    public string Role { get; set; }
-}
 
-// Login isteği modeli
-public class LoginRequest
-{
-    public string Username { get; set; }
-    public string Password { get; set; }
-}
