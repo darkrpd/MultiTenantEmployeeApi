@@ -15,12 +15,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString)
-        .EnableSensitiveDataLogging() // SQL loglarını açar
+        .EnableSensitiveDataLogging()
         .LogTo(Console.WriteLine, LogLevel.Information));
 
-
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -61,7 +58,7 @@ builder.Services.AddSwaggerGen(c =>
         Scheme = "Bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "JWT Token'ınızı buraya girin. Örnek: Bearer {token}"
+        Description = "JWT Token Example: Bearer {token}"
     });
 
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -86,15 +83,14 @@ builder.Services.AddControllers();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseAuthentication();  // JWT doğrulamasını aktif et
-app.UseAuthorization();   // Yetkilendirme kurallarını uygula
+app.UseAuthentication();  
+app.UseAuthorization();
 
 app.MapControllers();
 

@@ -19,14 +19,13 @@ public class EmployeeSyncService : IHostedService, IDisposable
     {
         _scopeFactory = scopeFactory;
         _logger = logger;
-        _dataFilePath = Path.GetFullPath(configuration["DataFilePath"]); // Root dizininden al
+        _dataFilePath = Path.GetFullPath(configuration["DataFilePath"]); 
     }
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Employee Sync Service Başlatıldı.");
+        _logger.LogInformation("Employee Sync Service Has been started.");
 
-        // Timer içinde async metod çağırmak için bir wrapper kullanıyoruz
         _timer = new Timer(async state => await SyncEmployeeDepartments(), null, TimeSpan.Zero, TimeSpan.FromMinutes(30));
 
         return Task.CompletedTask;
@@ -38,18 +37,17 @@ public class EmployeeSyncService : IHostedService, IDisposable
         using var scope = _scopeFactory.CreateScope();
         var _context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-        _logger.LogInformation("Çalışan ve Departman Senkronizasyonu Başlatıldı...");
+        _logger.LogInformation("Employee and Departments Sync Started.");
 
         if (!File.Exists(_dataFilePath))
         {
-            _logger.LogWarning($"Veri dosyası bulunamadı: {_dataFilePath}. Yeni dosya oluşturuluyor...");
+            _logger.LogWarning($"Employee file not found: {_dataFilePath}. A new file will be created at {_dataFilePath}...");
 
-            // Varsayılan boş JSON içeriği
-            var defaultJson = "[]"; // Boş bir liste
+            var defaultJson = "[]"; 
             await File.WriteAllTextAsync(_dataFilePath, defaultJson);
 
-            _logger.LogInformation($"Yeni JSON dosyası oluşturuldu: {_dataFilePath}");
-            return; // İlk çalıştırmada dosya boş olduğu için işlemi bitiriyoruz.
+            _logger.LogInformation($"New employees.json file created: {_dataFilePath}");
+            return;
         }
         
         // JSON dosyasından veri oku
@@ -59,7 +57,7 @@ public class EmployeeSyncService : IHostedService, IDisposable
 
         if (employeeDepartments == null || !employeeDepartments.Any())
         {
-            _logger.LogWarning("Güncellenecek çalışan-departman ilişkisi bulunamadı.");
+            _logger.LogWarning("New employee-department bonding is not found");
             return;
         }
 
@@ -70,7 +68,7 @@ public class EmployeeSyncService : IHostedService, IDisposable
 
             if (employee == null || department == null)
             {
-                _logger.LogWarning($"Çalışan veya Departman bulunamadı: EmployeeId={empDept.EmployeeId}, DepartmentId={empDept.DepartmentId}");
+                _logger.LogWarning($"Employee or Department is not found: EmployeeId={empDept.EmployeeId}, DepartmentId={empDept.DepartmentId}");
                 continue;
             }
 
@@ -85,17 +83,17 @@ public class EmployeeSyncService : IHostedService, IDisposable
                     DepartmentId = empDept.DepartmentId
                 });
 
-                _logger.LogInformation($"Yeni ilişki eklendi: EmployeeId={empDept.EmployeeId}, DepartmentId={empDept.DepartmentId}");
+                _logger.LogInformation($"A new relation added: EmployeeId={empDept.EmployeeId}, DepartmentId={empDept.DepartmentId}");
             }
         }
 
         _context.SaveChanges();
-        _logger.LogInformation("Çalışan ve Departman Senkronizasyonu Tamamlandı.");
+        _logger.LogInformation("Employee and Departments Sync completed.");
     }
 
     public Task StopAsync(CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Employee Sync Service Durduruldu.");
+        _logger.LogInformation("Employee Sync Service has been stopped.");
         _timer?.Change(Timeout.Infinite, 0);
         return Task.CompletedTask;
     }
