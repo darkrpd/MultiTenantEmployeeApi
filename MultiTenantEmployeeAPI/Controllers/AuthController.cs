@@ -3,6 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
 using MultiTenantEmployeeAPI.Data;
 using MultiTenantEmployeeAPI.Dtos;
 using MultiTenantEmployeeAPI.Models;
@@ -37,6 +38,7 @@ public class AuthController : ControllerBase
 
     
     [HttpPost("register")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Register([FromBody] RegisterRequest request)
     {
         if (_context.Users.Any(u => u.Username == request.Username))
